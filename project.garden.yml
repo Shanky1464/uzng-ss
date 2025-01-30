@@ -1,0 +1,42 @@
+apiVersion: garden.io/v0
+kind: Project
+name: service-status
+defaultEnvironment: minikube
+
+providers:
+  - name: kubernetes
+    context: minikube
+
+environments:
+  - name: minikube
+    defaultNamespace: default
+    production: false
+    variables:
+      KUBERNETES_PROVIDER: minikube
+
+modules:
+  - name: backend
+    path: backend
+    services:
+      - name: backend
+        type: container
+        build:
+          type: docker
+          dockerfile: Dockerfile
+        deploy:
+          type: kubernetes
+          manifests:
+            - ../k8s/backend-deployment.yaml
+
+  - name: frontend
+    path: frontend
+    services:
+      - name: frontend
+        type: container
+        build:
+          type: docker
+          dockerfile: Dockerfile
+        deploy:
+          type: kubernetes
+          manifests:
+            - ../k8s/frontend-deployment.yaml
